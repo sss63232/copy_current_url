@@ -23,7 +23,7 @@ const queryTabsAbout = async (queryInfo) => {
 const getTargetTabType = async () => {
   try {
     const tabType = await sequentiallySyncGet([TARGET_TAB_TYPE_KEY])
-    return _.head(tabType)
+    return _.head(tabType) || TARGET_TAB_TYPE.ONLY_CURRENT_TAB
   } catch (error) {
 
   }
@@ -42,12 +42,12 @@ const Popup = () => {
           let textToBeCopied = ''
 
           switch (type) {
-            default:
             case TARGET_TAB_TYPE.ALL_TABS: {
               const tabs = await queryTabsAbout({ currentWindow: true })
               textToBeCopied = tabs.map(getMarkdownLink).join(' ')
               break
             }
+            default:
             case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
               const tabs = await getCurrentActiveTabs()
               textToBeCopied = getMarkdownLink(tabs[0])
