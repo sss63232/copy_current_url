@@ -1,35 +1,85 @@
 import React, { useState, useEffect } from 'react'
 import styles from './Popup.module.css'
-import Success from './Success/Success'
-import { getMDLink } from './util'
+import _ from 'lodash'
 import copy from 'copy-to-clipboard'
-import { getCurrentActiveTabs } from '../background/browserTabsUtils'
-import { syncGet } from '../browserApiHelpers/storageHelper'
-import { TARGET_TAB_TYPE_KEY } from '../options/Options'
+import Success from './Success/Success'
+import { getCurrentActiveTabs, getTabsByQuerying } from '../background/browserTabsUtils'
+import { sequentiallySyncGet } from '../browserApiHelpers/storageHelper'
+import { TARGET_TAB_TYPE, TARGET_TAB_TYPE_KEY } from '../constants/tab'
+import { getMarkdownLink } from '../background/markdownUtils'
+import { sendMessageToBackground } from '../browserApiHelpers/runtimeHelper'
+
+const queryTabsAbout = async (queryInfo) => {
+  try {
+    const tabs = await getTabsByQuerying(queryInfo)
+    return tabs
+  } catch (error) {
+  }
+}
+
+/**
+ * 取得目前的目標 tab type
+ */
+const getTargetTabType = async () => {
+  try {
+    const tabType = await sequentiallySyncGet([TARGET_TAB_TYPE_KEY])
+    return _.head(tabType)
+  } catch (error) {
+
+  }
+}
 
 const Popup = () => {
   const [hasCopied, setHasCopied] = useState(false)
   const [copiedUrl, setCopiedUrl] = useState()
+  const [type, setType] = useState()
 
   useEffect(
-    async () => {
-      const tabs = await getCurrentActiveTabs()
-      const { title, url } = tabs[0]
-      syncGet([TARGET_TAB_TYPE_KEY]).then(result => {
-      })
-      const mdLink = getMDLink(title, url)
-      const copySucceed = copy(mdLink)
-      if (copySucceed) {
-        setHasCopied(true)
-        setCopiedUrl(mdLink)
+    () => {
+      const copyTargetTabs = async () => {
+        try {
+          const type = await getTargetTabType()
+          let textToBeCopied = ''
+
+          switch (type) {
+            default:
+            case TARGET_TAB_TYPE.ALL_TABS: {
+              const tabs = await queryTabsAbout({ currentWindow: true })
+              textToBeCopied = tabs.map(getMarkdownLink).join(' ')
+              break
+            }
+            case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
+              const tabs = await getCurrentActiveTabs()
+              textToBeCopied = getMarkdownLink(tabs[0])
+            }
+          }
+
+          const hasCopiedSuccessfully = copy(textToBeCopied)
+          if (hasCopiedSuccessfully) {
+            setType(type)
+            setHasCopied(true)
+            setCopiedUrl(textToBeCopied)
+          }
+        } catch (error) {
+
+        }
       }
+
+      copyTargetTabs()
+
+      sendMessageToBackground({ copy: 'copy' })
     },
     []
   )
 
   return (
     <div className={styles.popup}>
-      {hasCopied && <Success copiedLink={copiedUrl} />}
+      {hasCopied && (
+        <Success
+          type={type}
+          copiedLink={copiedUrl}
+        />
+      )}
     </div>
   )
 }

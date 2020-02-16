@@ -1,6 +1,6 @@
 /* globals browser */
 
-const getTabsBy = async (queryInfo = {}) => {
+export const getTabsByQuerying = async (queryInfo = {}) => {
   try {
     const tabs = await browser.tabs.query(queryInfo)
     return tabs
@@ -10,7 +10,7 @@ const getTabsBy = async (queryInfo = {}) => {
 }
 
 export const getCurrentActiveTabs = async () => {
-  const currentActiveTabs = await getTabsBy({
+  const currentActiveTabs = await getTabsByQuerying({
     currentWindow: true,
     active: true
   })

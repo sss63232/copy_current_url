@@ -1,17 +1,39 @@
+import _ from 'lodash'
+
 const DEFAULT_OPTIONS = {
   escape: false
 }
 
-export async function syncSave (storingData) {
+/**
+ * chrome.storage.sync.set({key: value}, function() {
+ *   console.log('Value is set to ' + value);
+ * });
+ */
+export const promisifiedSyncSet = async storingData => {
   return new Promise((resolve) => {
     chrome.storage.sync.set(storingData, resolve)
   })
 }
 
-export async function syncGet (keys) {
+/**
+ *
+ * @example
+ * chrome.storage.sync.get(['key'], function (result) {
+ *  console.log('Value currently is ' + result.key)
+ * })
+ *
+ * @return {Promise}
+ */
+export const promisifiedSyncGet = keys => {
   return new Promise((resolve) => {
     chrome.storage.sync.get(keys, resolve)
   })
+}
+
+export const sequentiallySyncGet = async keys => {
+  const resultObj = await promisifiedSyncGet(keys)
+  const results = keys.map(key => _.get(resultObj, key))
+  return results
 }
 
 export function onChange (callback) {

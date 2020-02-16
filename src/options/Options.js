@@ -1,48 +1,50 @@
-import React, { Component } from 'react'
-import '@polymer/paper-button/paper-button.js'
-
+import React from 'react'
 import './Options.css'
 import { Radio } from 'antd'
-import { syncSave } from '../browserApiHelpers/storageHelper'
+import { promisifiedSyncSet, promisifiedSyncGet } from '../browserApiHelpers/storageHelper'
+import { TARGET_TAB_TYPE_KEY, TARGET_TAB_TYPE } from '../constants/tab'
 
-export const TARGET_TAB_TYPE_KEY = 'targetTabType'
+const changeTargetTabTypeHandler = e => {
+  const targetValue = e.target.value
+  const storingData = {
+    [TARGET_TAB_TYPE_KEY]: targetValue
+  }
+  promisifiedSyncSet(storingData).then(() => {
+    console.log('set OK')
+    promisifiedSyncGet([TARGET_TAB_TYPE_KEY]).then(result => {
+      console.log('TCL: ------------------')
+      console.log('TCL: result', result)
+      console.log('TCL: ------------------')
+    })
+  })
+}
 
-const TARGET_TAB_TYPE = [
-  'onlyCurrentTab',
-  'allTabs'
-]
-
-class Options extends Component {
-  render () {
-    return (
-      <div className='App'>
-        Copy:
-        <Radio.Group
-          defaultValue='onlyCurrentTab'
-          buttonStyle='solid'
-          onChange={e => {
-            const targetValue = e.target.value
-            syncSave({
-              [TARGET_TAB_TYPE_KEY]: targetValue
-            })
-          }}
-        >
-          {
-            TARGET_TAB_TYPE.map(mode => {
+const Options = props => {
+  return (
+    <div className='App'>
+      Copy:
+      <Radio.Group
+        buttonStyle='solid'
+        defaultValue={TARGET_TAB_TYPE.ONLY_CURRENT_TAB}
+        onChange={changeTargetTabTypeHandler}
+      >
+        {
+          Object.keys(TARGET_TAB_TYPE)
+            .map(key => TARGET_TAB_TYPE[key])
+            .map(targetTabType => {
               return (
                 <Radio.Button
-                  key={`${mode}Mode`}
-                  value={mode}
+                  key={`${targetTabType}__Mode`}
+                  value={targetTabType}
                 >
-                  {mode}
+                  {targetTabType}
                 </Radio.Button>
               )
             })
-          }
-        </Radio.Group>
-      </div>
-    )
-  }
+        }
+      </Radio.Group>
+    </div>
+  )
 }
 
 export default Options

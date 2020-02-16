@@ -5,12 +5,16 @@ import { Result } from 'antd'
 const renderMarkdown = (mdString = '') => <ReactMarkdown source={mdString} />
 
 const Success = props => {
-  const { copiedLink } = props
+  const {
+    type,
+    copiedLink
+  } = props
 
   const mdRenderedLink = renderMarkdown(copiedLink)
 
   return (
     <div>
+      current type is {type}
       <Result
         status='success'
         title='Successfully Copied the URL'
