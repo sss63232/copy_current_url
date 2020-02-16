@@ -8,7 +8,7 @@ export const getMarkdownLink = (tab, options = {}) => {
   } = options
 
   const { title, url } = tab
-  const mdLinkText = `[${hasTitle ? title : ''}](${url})`
+  const mdLinkText = `[${hasTitle ? title : ''}](${url}) `
 
   return mdLinkText
 }

@@ -7,15 +7,6 @@ import { getCurrentActiveTabs, getTabsByQuerying } from '../background/browserTa
 import { sequentiallySyncGet } from '../browserApiHelpers/storageHelper'
 import { TARGET_TAB_TYPE, TARGET_TAB_TYPE_KEY } from '../constants/tab'
 import { getMarkdownLink } from '../background/markdownUtils'
-import { sendMessageToBackground } from '../browserApiHelpers/runtimeHelper'
-
-const queryTabsAbout = async (queryInfo) => {
-  try {
-    const tabs = await getTabsByQuerying(queryInfo)
-    return tabs
-  } catch (error) {
-  }
-}
 
 /**
  * 取得目前的目標 tab type
@@ -24,6 +15,42 @@ const getTargetTabType = async () => {
   try {
     const tabType = await sequentiallySyncGet([TARGET_TAB_TYPE_KEY])
     return _.head(tabType) || TARGET_TAB_TYPE.ONLY_CURRENT_TAB
+  } catch (error) {
+
+  }
+}
+
+const copyHandler = async targetType => {
+  let copyingText = ''
+
+  try {
+    switch (targetType) {
+      case TARGET_TAB_TYPE.ALL_TABS: {
+        const tabs = await getTabsByQuerying({ currentWindow: true })
+        copyingText = tabs.map(getMarkdownLink).join(' ')
+        break
+      }
+      case TARGET_TAB_TYPE.HIGHLIGHTED_TABS: {
+        const tabs = await getTabsByQuerying({
+          highlighted: true,
+          currentWindow: true
+        })
+        copyingText = tabs.map(getMarkdownLink).join(' ')
+        break
+      }
+      default:
+      case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
+        const tabs = await getCurrentActiveTabs()
+        copyingText = getMarkdownLink(tabs[0])
+        break
+      }
+    }
+
+    const hasCopiedSuccessfully = copy(copyingText)
+    return {
+      hasCopiedSuccessfully,
+      copiedText: copyingText
+    }
   } catch (error) {
 
   }
@@ -39,35 +66,20 @@ const Popup = () => {
       const copyTargetTabs = async () => {
         try {
           const type = await getTargetTabType()
-          let textToBeCopied = ''
+          const {
+            copiedText,
+            hasCopiedSuccessfully
+          } = await copyHandler(type)
 
-          switch (type) {
-            case TARGET_TAB_TYPE.ALL_TABS: {
-              const tabs = await queryTabsAbout({ currentWindow: true })
-              textToBeCopied = tabs.map(getMarkdownLink).join(' ')
-              break
-            }
-            default:
-            case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
-              const tabs = await getCurrentActiveTabs()
-              textToBeCopied = getMarkdownLink(tabs[0])
-            }
-          }
-
-          const hasCopiedSuccessfully = copy(textToBeCopied)
-          if (hasCopiedSuccessfully) {
-            setType(type)
-            setHasCopied(true)
-            setCopiedUrl(textToBeCopied)
-          }
+          setType(type)
+          setHasCopied(hasCopiedSuccessfully)
+          setCopiedUrl(copiedText)
         } catch (error) {
 
         }
       }
 
       copyTargetTabs()
-
-      sendMessageToBackground({ copy: 'copy' })
     },
     []
   )
