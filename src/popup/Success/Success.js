@@ -1,23 +1,31 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result } from 'antd'
+import { Result, Tag } from 'antd'
 
 const renderMarkdown = (mdString = '') => <ReactMarkdown source={mdString} />
 
 const Success = props => {
   const {
-    type,
-    copiedLink
+    copiedLink,
+    target: {
+      targetTabType,
+      targetContentType
+    }
   } = props
 
   const mdRenderedLink = renderMarkdown(copiedLink)
 
   return (
     <div>
-      current type is {type}
       <Result
         status='success'
-        title='Successfully Copied the URL'
+        title={(
+          <>
+            <span>Successfully Copied</span>
+            <Tag color='cyan'>{targetTabType}</Tag>
+            <Tag color='cyan'>{targetContentType}</Tag>
+          </>
+        )}
         subTitle='The URL has also been saved to your clipboard so you could simply paste it right now.'
         extra={
           <div>

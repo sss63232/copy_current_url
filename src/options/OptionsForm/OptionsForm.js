@@ -1,23 +1,58 @@
 import React from 'react'
-import { Radio, Form, Button } from 'antd'
-import { TARGET_CONTENT_TYPE, TARGET_TAB_TYPE } from '../../constants/tab'
+import { Radio, Form, Button, message } from 'antd'
+import _ from 'lodash'
+import {
+  TARGET_CONTENT_TYPE,
+  TARGET_TAB_TYPE,
+  TARGET_TAB_TYPE_KEY,
+  TARGET_CONTENT_TYPE_KEY
+} from '../../constants/tab'
 import AntdFormField from '../AntdFormField/AntdFormField'
+import { promisifiedSyncSet } from '../../browserApiHelpers/storageHelper'
+
+const OPTIONS_FORM_NAME = 'optionsForm'
+
+const STORAGE_MESSAGE_KEY = 'storageMessageKey'
 
 const OptionsForm = props => {
-  const handleSubmit = e => {
-    console.log('TCL: ------------')
-    console.log('TCL:  e ', e)
-    console.log('TCL: ------------')
-    e.preventDefault()
-    props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('TCL: ------------------')
-        console.log('TCL: values', values)
-        console.log('TCL: ------------------')
-      }
+  const handleError = error => {
+    if (_.isNull(error)) {
+      return
+    }
+
+    message.error({
+      key: STORAGE_MESSAGE_KEY,
+      content: `Failed, Error Detail: ${error}`
     })
   }
 
+  const handleSubmit = e => {
+    e.preventDefault()
+
+    message.loading({
+      key: STORAGE_MESSAGE_KEY,
+      content: 'saving options...'
+    })
+
+    props.form.validateFields(
+      async (err, values) => {
+        if (!err) {
+          try {
+            await promisifiedSyncSet(values)
+            message.success({
+              key: STORAGE_MESSAGE_KEY,
+              content: 'Saved'
+            })
+          } catch (error) {
+            err = error
+          }
+        }
+
+        handleError(err)
+      })
+  }
+
+  const { form } = props
   return (
     <Form
       layout='vertical'
@@ -25,14 +60,14 @@ const OptionsForm = props => {
     >
       <Form.Item label='Target tab:'>
         <AntdFormField
-          name='targetTab'
-          form={props.form}
+          form={form}
+          name={TARGET_TAB_TYPE_KEY}
           option={{
             initialValue: TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
             rules: [
               {
                 required: true,
-                message: 'Please input your target tab!'
+                message: 'Please input your target tab type!'
               }
             ]
           }}
@@ -58,14 +93,14 @@ const OptionsForm = props => {
 
       <Form.Item label='Target content:'>
         <AntdFormField
-          name='targetContent'
-          form={props.form}
+          form={form}
+          name={TARGET_CONTENT_TYPE_KEY}
           option={{
             initialValue: TARGET_CONTENT_TYPE.BOTH_TITLE_URL,
             rules: [
               {
                 required: true,
-                message: 'Please input your target content!'
+                message: 'Please input your target content type!'
               }
             ]
           }}
@@ -100,4 +135,4 @@ const OptionsForm = props => {
   )
 }
 
-export const WrappedOptionsForm = Form.create({ name: 'optionsForm' })(OptionsForm)
+export const WrappedOptionsForm = Form.create({ name: OPTIONS_FORM_NAME })(OptionsForm)

@@ -12,6 +12,7 @@ const Options = props => {
         <Header>
           <div className='logo' />
         </Header>
+
         <Content style={{ padding: '50px' }}>
           <div style={{
             background: '#fff',
@@ -22,6 +23,7 @@ const Options = props => {
             <WrappedOptionsForm />
           </div>
         </Content>
+
         <Footer style={{ textAlign: 'center' }}>
           CopyUrlToMD ©20202 Created by YU-HSIN, CHEN
         </Footer>

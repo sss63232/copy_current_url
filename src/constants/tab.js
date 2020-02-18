@@ -6,6 +6,8 @@ export const TARGET_TAB_TYPE = {
   ALL_TABS: 'allTabs'
 }
 
+export const TARGET_CONTENT_TYPE_KEY = 'targetContentType'
+
 export const TARGET_CONTENT_TYPE = {
   ONLY_TITLE: 'onlyTitle',
   ONLY_URL: 'onlyUrl',

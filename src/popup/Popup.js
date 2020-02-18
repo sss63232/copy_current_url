@@ -1,33 +1,63 @@
 import React, { useState, useEffect } from 'react'
 import styles from './Popup.module.css'
-import _ from 'lodash'
 import copy from 'copy-to-clipboard'
 import Success from './Success/Success'
 import { getCurrentActiveTabs, getTabsByQuerying } from '../background/browserTabsUtils'
-import { sequentiallySyncGet } from '../browserApiHelpers/storageHelper'
-import { TARGET_TAB_TYPE, TARGET_TAB_TYPE_KEY } from '../constants/tab'
+import { promisifiedSyncGet } from '../browserApiHelpers/storageHelper'
+import {
+  TARGET_TAB_TYPE,
+  TARGET_TAB_TYPE_KEY,
+  TARGET_CONTENT_TYPE_KEY,
+  TARGET_CONTENT_TYPE
+} from '../constants/tab'
 import { getMarkdownLink } from '../background/markdownUtils'
 
 /**
- * 取得目前的目標 tab type
+ * 取得目前的目標
  */
-const getTargetTabType = async () => {
+const getTarget = async () => {
   try {
-    const tabType = await sequentiallySyncGet([TARGET_TAB_TYPE_KEY])
-    return _.head(tabType) || TARGET_TAB_TYPE.ONLY_CURRENT_TAB
+    const target = await promisifiedSyncGet([
+      TARGET_TAB_TYPE_KEY,
+      TARGET_CONTENT_TYPE_KEY
+    ])
+    return target
   } catch (error) {
 
   }
 }
 
-const copyHandler = async targetType => {
+const copyHandler = async target => {
   let copyingText = ''
 
+  const {
+    targetContentType,
+    targetTabType
+  } = target
+
+  let mdLinkOption = {}
+  switch (targetContentType) {
+    case TARGET_CONTENT_TYPE.ONLY_URL: {
+      mdLinkOption = { hasTitle: false }
+      break
+    }
+    case TARGET_CONTENT_TYPE.ONLY_TITLE: {
+      mdLinkOption = { hasUrl: false }
+      break
+    }
+    default:
+    case TARGET_CONTENT_TYPE.BOTH_TITLE_URL: {
+      break
+    }
+  }
+
+  const getMD = tab => getMarkdownLink(tab, mdLinkOption)
+
   try {
-    switch (targetType) {
+    switch (targetTabType) {
       case TARGET_TAB_TYPE.ALL_TABS: {
         const tabs = await getTabsByQuerying({ currentWindow: true })
-        copyingText = tabs.map(getMarkdownLink).join(' ')
+        copyingText = tabs.map(getMD).join(' ')
         break
       }
       case TARGET_TAB_TYPE.HIGHLIGHTED_TABS: {
@@ -35,13 +65,13 @@ const copyHandler = async targetType => {
           highlighted: true,
           currentWindow: true
         })
-        copyingText = tabs.map(getMarkdownLink).join(' ')
+        copyingText = tabs.map(getMD).join(' ')
         break
       }
       default:
       case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
         const tabs = await getCurrentActiveTabs()
-        copyingText = getMarkdownLink(tabs[0])
+        copyingText = getMD(tabs[0])
         break
       }
     }
@@ -59,19 +89,19 @@ const copyHandler = async targetType => {
 const Popup = () => {
   const [hasCopied, setHasCopied] = useState(false)
   const [copiedUrl, setCopiedUrl] = useState()
-  const [type, setType] = useState()
+  const [target, setTarget] = useState({})
 
   useEffect(
     () => {
       const copyTargetTabs = async () => {
         try {
-          const type = await getTargetTabType()
+          const savedTarget = await getTarget()
           const {
             copiedText,
             hasCopiedSuccessfully
-          } = await copyHandler(type)
+          } = await copyHandler(savedTarget)
 
-          setType(type)
+          setTarget(savedTarget)
           setHasCopied(hasCopiedSuccessfully)
           setCopiedUrl(copiedText)
         } catch (error) {
@@ -88,7 +118,7 @@ const Popup = () => {
     <div className={styles.popup}>
       {hasCopied && (
         <Success
-          type={type}
+          target={target}
           copiedLink={copiedUrl}
         />
       )}
