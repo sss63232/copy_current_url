@@ -1,3 +1,8 @@
 .popup {
     width: 500px;
 }
+
+.linkToOptions {
+    float: right;
+    margin: 15px;
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import styles from './Popup.module.css'
+import { Button } from 'antd'
 import copy from 'copy-to-clipboard'
 import Success from './Success/Success'
 import { getCurrentActiveTabs, getTabsByQuerying } from '../background/browserTabsUtils'
@@ -12,10 +12,12 @@ import {
 } from '../constants/tab'
 import { getMarkdownLink } from '../background/markdownUtils'
 
+import styles from './Popup.module.css'
+
 /**
  * 取得目前的目標
  */
-const getTarget = async () => {
+export const getTarget = async () => {
   try {
     const target = await promisifiedSyncGet([
       TARGET_TAB_TYPE_KEY,
@@ -31,8 +33,8 @@ const copyHandler = async target => {
   let copyingText = ''
 
   const {
-    targetContentType,
-    targetTabType
+    targetTabType = TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
+    targetContentType = TARGET_CONTENT_TYPE.BOTH_TITLE_URL
   } = target
 
   let mdLinkOption = {}
@@ -116,6 +118,16 @@ const Popup = () => {
 
   return (
     <div className={styles.popup}>
+      <a
+        href='options.html'
+        target='_blank'
+        className={styles.linkToOptions}
+      >
+        <Button
+          shape='circle'
+          icon='setting'
+        />
+      </a>
       {hasCopied && (
         <Success
           target={target}
