@@ -19,7 +19,7 @@ const STORAGE_MESSAGE_KEY = 'storageMessageKey'
 const OptionsForm = props => {
   const {
     form,
-    setPageMode
+    setPageMode = null
   } = props
 
   const target = useGetSyncTarget()
@@ -48,11 +48,15 @@ const OptionsForm = props => {
         if (!err) {
           try {
             await promisifiedSyncSet(values)
+
             message.success({
               key: STORAGE_MESSAGE_KEY,
               content: 'Saved'
             })
-            setPageMode(PAGE_MODE.DO_COPY)
+
+            if (!_.isNull(setPageMode)) {
+              setPageMode(PAGE_MODE.DO_COPY)
+            }
           } catch (error) {
             err = error
           }

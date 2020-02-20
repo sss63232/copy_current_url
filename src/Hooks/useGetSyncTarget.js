@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getTargetFromChromeSync } from '../popup/Popup'
+import { getTargetFromChromeSync } from '../browserApiHelpers/storageHelper'
 
 const useGetSyncTarget = () => {
   const [target, setTarget] = useState({})

@@ -25,8 +25,8 @@ export const copyHandler = async target => {
     }
   }
 
-  const getMD = tab => getMarkdownLink(tab, mdLinkOption)
-  const getJoinedMD = tabs => tabs.map(getMD).join('')
+  const getLinkText = tab => getMarkdownLink(tab, mdLinkOption)
+  const getJoinedLinkText = tabs => tabs.map(getLinkText).join('')
 
   let selectedTabs = []
   try {
@@ -54,7 +54,7 @@ export const copyHandler = async target => {
       }
     }
 
-    const text = getJoinedMD(selectedTabs)
+    const text = getJoinedLinkText(selectedTabs)
     const hasCopiedSuccessfully = copy(text)
     return {
       hasCopiedSuccessfully,

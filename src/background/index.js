@@ -1,7 +1,6 @@
-import { promisifiedSyncSet } from '../browserApiHelpers/storageHelper'
+import { promisifiedSyncSet, getTargetFromChromeSync } from '../browserApiHelpers/storageHelper'
 import { TARGET_TAB_TYPE, TARGET_CONTENT_TYPE } from '../constants/tab'
 import * as browser from 'webextension-polyfill'
-import { getTargetFromChromeSync } from '../popup/Popup'
 
 // browser.runtime.onMessage.addListener(message => {
 // })

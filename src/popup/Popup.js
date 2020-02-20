@@ -1,30 +1,10 @@
 import React, { useState } from 'react'
-import { promisifiedSyncGet } from '../browserApiHelpers/storageHelper'
-import {
-  TARGET_TAB_TYPE_KEY,
-  TARGET_CONTENT_TYPE_KEY
-} from '../constants/tab'
 // import styles from './Popup.module.css'
 import { PAGE_MODE } from '../constants/page'
 import DoCopy from './DoCopy/DoCopy'
-import Options from '../options/Options'
 import { Layout } from 'antd'
+import Settings from '../Components/Settings'
 const { Content, Footer } = Layout
-
-/**
- * 取得目前 chrome sync 中的目標
- */
-export const getTargetFromChromeSync = async () => {
-  try {
-    const target = await promisifiedSyncGet([
-      TARGET_TAB_TYPE_KEY,
-      TARGET_CONTENT_TYPE_KEY
-    ])
-    return target
-  } catch (error) {
-
-  }
-}
 
 const Popup = () => {
   const [pageMode, setPageMode] = useState(PAGE_MODE.DO_COPY)
@@ -46,7 +26,7 @@ const Popup = () => {
         {
           pageMode === PAGE_MODE.OPTIONS && (
             <>
-              <Options
+              <Settings
                 setPageMode={setPageMode}
               />
             </>

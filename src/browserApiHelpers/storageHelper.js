@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { TARGET_TAB_TYPE_KEY, TARGET_CONTENT_TYPE_KEY } from '../constants/tab'
 
 const DEFAULT_OPTIONS = {
   escape: false
@@ -46,4 +47,19 @@ export function onChange (callback) {
 
     callback(callbackChanges)
   })
+}
+
+/**
+ * 取得目前 chrome sync 中的目標
+ */
+export const getTargetFromChromeSync = async () => {
+  try {
+    const target = await promisifiedSyncGet([
+      TARGET_TAB_TYPE_KEY,
+      TARGET_CONTENT_TYPE_KEY
+    ])
+    return target
+  } catch (error) {
+
+  }
 }
