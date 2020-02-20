@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Result, Tag } from 'antd'
+import { Result, Tag, Divider } from 'antd'
 
 const renderMarkdown = (mdString = '') => <ReactMarkdown source={mdString} />
 
@@ -21,14 +21,15 @@ const Success = props => {
         status='success'
         title={(
           <>
-            <span>Successfully Copied</span>
+            <div>Successfully Copied</div>
             <Tag color='cyan'>{targetTabType}</Tag>
             <Tag color='cyan'>{targetContentType}</Tag>
           </>
         )}
-        subTitle='The URL has also been saved to your clipboard so you could simply paste it right now.'
+        subTitle='Also saved into your clipboard so you can simply paste it anywhere right now.'
         extra={
           <div>
+            <Divider />
             <h2>Source code in clipboard</h2>
             <span>{copiedLink}</span>
             <h2>Will be rendered as </h2>

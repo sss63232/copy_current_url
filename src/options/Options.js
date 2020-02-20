@@ -27,8 +27,7 @@ const Options = props => {
         <Footer style={{ textAlign: 'center' }}>
           CopyUrlToMD ©20202 Created by YU-HSIN, CHEN
         </Footer>
-      </Layout>,
-
+      </Layout>
     </div>
   )
 }

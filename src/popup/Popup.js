@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { Button } from 'antd'
-import copy from 'copy-to-clipboard'
+import { Button, Layout, Row, Col } from 'antd'
 import Success from './Success/Success'
-import { getCurrentActiveTabs, getTabsByQuerying } from '../background/browserTabsUtils'
 import { promisifiedSyncGet } from '../browserApiHelpers/storageHelper'
 import {
-  TARGET_TAB_TYPE,
   TARGET_TAB_TYPE_KEY,
-  TARGET_CONTENT_TYPE_KEY,
-  TARGET_CONTENT_TYPE
+  TARGET_CONTENT_TYPE_KEY
 } from '../constants/tab'
-import { getMarkdownLink } from '../background/markdownUtils'
-
-import styles from './Popup.module.css'
+// import styles from './Popup.module.css'
+import { WrappedOptionsForm } from '../options/OptionsForm/OptionsForm'
+import { PAGE_MODE } from '../constants/page'
+import { copyHandler } from '../background/copyHandler'
+const { Content, Footer } = Layout
 
 /**
- * 取得目前的目標
+ * 取得目前 chrome sync 中的目標
  */
-export const getTarget = async () => {
+export const getTargetFromChromeSync = async () => {
   try {
     const target = await promisifiedSyncGet([
       TARGET_TAB_TYPE_KEY,
@@ -29,75 +27,17 @@ export const getTarget = async () => {
   }
 }
 
-const copyHandler = async target => {
-  let copyingText = ''
-
-  const {
-    targetTabType = TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
-    targetContentType = TARGET_CONTENT_TYPE.BOTH_TITLE_URL
-  } = target
-
-  let mdLinkOption = {}
-  switch (targetContentType) {
-    case TARGET_CONTENT_TYPE.ONLY_URL: {
-      mdLinkOption = { hasTitle: false }
-      break
-    }
-    case TARGET_CONTENT_TYPE.ONLY_TITLE: {
-      mdLinkOption = { hasUrl: false }
-      break
-    }
-    default:
-    case TARGET_CONTENT_TYPE.BOTH_TITLE_URL: {
-      break
-    }
-  }
-
-  const getMD = tab => getMarkdownLink(tab, mdLinkOption)
-
-  try {
-    switch (targetTabType) {
-      case TARGET_TAB_TYPE.ALL_TABS: {
-        const tabs = await getTabsByQuerying({ currentWindow: true })
-        copyingText = tabs.map(getMD).join(' ')
-        break
-      }
-      case TARGET_TAB_TYPE.HIGHLIGHTED_TABS: {
-        const tabs = await getTabsByQuerying({
-          highlighted: true,
-          currentWindow: true
-        })
-        copyingText = tabs.map(getMD).join(' ')
-        break
-      }
-      default:
-      case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
-        const tabs = await getCurrentActiveTabs()
-        copyingText = getMD(tabs[0])
-        break
-      }
-    }
-
-    const hasCopiedSuccessfully = copy(copyingText)
-    return {
-      hasCopiedSuccessfully,
-      copiedText: copyingText
-    }
-  } catch (error) {
-
-  }
-}
-
 const Popup = () => {
   const [hasCopied, setHasCopied] = useState(false)
   const [copiedUrl, setCopiedUrl] = useState()
   const [target, setTarget] = useState({})
+  const [pageMode, setPageMode] = useState(PAGE_MODE.POPUP)
 
   useEffect(
     () => {
       const copyTargetTabs = async () => {
         try {
-          const savedTarget = await getTarget()
+          const savedTarget = await getTargetFromChromeSync()
           const {
             copiedText,
             hasCopiedSuccessfully
@@ -117,24 +57,71 @@ const Popup = () => {
   )
 
   return (
-    <div className={styles.popup}>
-      <a
-        href='options.html'
-        target='_blank'
-        className={styles.linkToOptions}
+    <Layout className='layout'>
+      <Content
+        style={{
+          width: 500
+        }}
       >
-        <Button
-          shape='circle'
-          icon='setting'
-        />
-      </a>
-      {hasCopied && (
-        <Success
-          target={target}
-          copiedLink={copiedUrl}
-        />
-      )}
-    </div>
+        {
+          pageMode === PAGE_MODE.OPTIONS && (
+            <>
+              <Row
+                type='flex'
+                justify='end'
+              >
+                <Col>
+                  <Button
+                    shape='circle'
+                    icon='rollback'
+                    style={{
+                      margin: 15
+                    }}
+                    onClick={() => {
+                      setPageMode(PAGE_MODE.POPUP)
+                    }}
+                  />
+                </Col>
+              </Row>
+              <WrappedOptionsForm />
+            </>
+          )
+        }
+        {
+          pageMode === PAGE_MODE.POPUP && hasCopied && (
+            <>
+              <Row
+                type='flex'
+                justify='end'
+              >
+                <Button
+                  shape='circle'
+                  icon='setting'
+                  style={{
+                    margin: 15
+                  }}
+                  onClick={() => {
+                    setPageMode(PAGE_MODE.OPTIONS)
+                  }}
+                />
+              </Row>
+              <Success
+                target={target}
+                copiedLink={copiedUrl}
+              />
+            </>
+          )
+        }
+      </Content>
+
+      <Footer
+        style={{
+          textAlign: 'center'
+        }}
+      >
+CopyUrlToMD ©20202 Created by YU-HSIN, CHEN
+      </Footer>
+    </Layout>
   )
 }
 
