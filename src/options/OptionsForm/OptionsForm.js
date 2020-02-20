@@ -9,12 +9,18 @@ import {
 } from '../../constants/tab'
 import AntdFormField from '../AntdFormField/AntdFormField'
 import { promisifiedSyncSet } from '../../browserApiHelpers/storageHelper'
+import { PAGE_MODE } from '../../constants/page'
 
 const OPTIONS_FORM_NAME = 'optionsForm'
 
 const STORAGE_MESSAGE_KEY = 'storageMessageKey'
 
 const OptionsForm = props => {
+  const {
+    form,
+    setPageMode
+  } = props
+
   const handleError = error => {
     if (_.isNull(error)) {
       return
@@ -34,7 +40,7 @@ const OptionsForm = props => {
       content: 'saving options...'
     })
 
-    props.form.validateFields(
+    form.validateFields(
       async (err, values) => {
         if (!err) {
           try {
@@ -43,6 +49,7 @@ const OptionsForm = props => {
               key: STORAGE_MESSAGE_KEY,
               content: 'Saved'
             })
+            setPageMode(PAGE_MODE.POPUP)
           } catch (error) {
             err = error
           }
@@ -52,7 +59,6 @@ const OptionsForm = props => {
       })
   }
 
-  const { form } = props
   return (
     <Form
       layout='vertical'
@@ -129,7 +135,7 @@ const OptionsForm = props => {
         type='primary'
         htmlType='submit'
       >
-          Submit
+          Save settings
       </Button>
     </Form>
   )

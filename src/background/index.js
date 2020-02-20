@@ -1,6 +1,7 @@
-import { getTarget } from '../popup/Popup'
 import { promisifiedSyncSet } from '../browserApiHelpers/storageHelper'
 import { TARGET_TAB_TYPE, TARGET_CONTENT_TYPE } from '../constants/tab'
+import * as browser from 'webextension-polyfill'
+import { getTargetFromChromeSync } from '../popup/Popup'
 
 // browser.runtime.onMessage.addListener(message => {
 // })
@@ -20,7 +21,7 @@ const onInstalledHandler = async details => {
 }
 
 const initAppSettings = async () => {
-  const target = await getTarget()
+  const target = await getTargetFromChromeSync()
 
   const {
     targetTabType = TARGET_TAB_TYPE.ONLY_CURRENT_TAB,

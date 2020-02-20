@@ -29,23 +29,38 @@ export const getTargetFromChromeSync = async () => {
 
 const Popup = () => {
   const [hasCopied, setHasCopied] = useState(false)
-  const [copiedUrl, setCopiedUrl] = useState()
+  const [copiedUrl, setCopiedUrl] = useState('')
   const [target, setTarget] = useState({})
   const [pageMode, setPageMode] = useState(PAGE_MODE.POPUP)
 
   useEffect(
     () => {
+      setHasCopied(false)
+      setCopiedUrl('')
+
+      const initTarget = async () => {
+        const savedTarget = await getTargetFromChromeSync()
+        setTarget(savedTarget)
+      }
+
+      initTarget()
+    },
+    [pageMode]
+  )
+
+  useEffect(
+    () => {
       const copyTargetTabs = async () => {
         try {
-          const savedTarget = await getTargetFromChromeSync()
-          const {
-            copiedText,
-            hasCopiedSuccessfully
-          } = await copyHandler(savedTarget)
+          if (pageMode === PAGE_MODE.POPUP) {
+            const {
+              copiedText,
+              hasCopiedSuccessfully
+            } = await copyHandler(target)
 
-          setTarget(savedTarget)
-          setHasCopied(hasCopiedSuccessfully)
-          setCopiedUrl(copiedText)
+            setHasCopied(hasCopiedSuccessfully)
+            setCopiedUrl(copiedText)
+          }
         } catch (error) {
 
         }
@@ -53,16 +68,48 @@ const Popup = () => {
 
       copyTargetTabs()
     },
-    []
+    [pageMode, target]
   )
 
   return (
-    <Layout className='layout'>
+    <Layout>
       <Content
         style={{
           width: 500
         }}
       >
+        {
+          pageMode === PAGE_MODE.POPUP && hasCopied && (
+            <>
+              <Row
+                type='flex'
+                justify='end'
+              >
+                <Button
+                  shape='circle'
+                  icon='setting'
+                  style={{
+                    margin: 15
+                  }}
+                  onClick={() => {
+                    setPageMode(PAGE_MODE.OPTIONS)
+                  }}
+                />
+              </Row>
+              <div
+                style={{
+                  background: '#fff',
+                  padding: 25
+                }}
+              >
+                <Success
+                  target={target}
+                  copiedLink={copiedUrl}
+                />
+              </div>
+            </>
+          )
+        }
         {
           pageMode === PAGE_MODE.OPTIONS && (
             <>
@@ -83,32 +130,16 @@ const Popup = () => {
                   />
                 </Col>
               </Row>
-              <WrappedOptionsForm />
-            </>
-          )
-        }
-        {
-          pageMode === PAGE_MODE.POPUP && hasCopied && (
-            <>
-              <Row
-                type='flex'
-                justify='end'
+              <div
+                style={{
+                  background: '#fff',
+                  padding: 25
+                }}
               >
-                <Button
-                  shape='circle'
-                  icon='setting'
-                  style={{
-                    margin: 15
-                  }}
-                  onClick={() => {
-                    setPageMode(PAGE_MODE.OPTIONS)
-                  }}
+                <WrappedOptionsForm
+                  setPageMode={setPageMode}
                 />
-              </Row>
-              <Success
-                target={target}
-                copiedLink={copiedUrl}
-              />
+              </div>
             </>
           )
         }
