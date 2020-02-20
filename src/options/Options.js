@@ -1,34 +1,45 @@
 import React from 'react'
 import './Options.css'
-import { Layout } from 'antd'
+import { Row, Col, Button } from 'antd'
 import { WrappedOptionsForm } from './OptionsForm/OptionsForm'
-
-const { Header, Content, Footer } = Layout
+import { PAGE_MODE } from '../constants/page'
 
 const Options = props => {
+  const {
+    setPageMode
+  } = props
+
   return (
-    <div className='App'>
-      <Layout className='layout'>
-        <Header>
-          <div className='logo' />
-        </Header>
+    <>
+      <Row
+        type='flex'
+        justify='end'
+      >
+        <Col>
+          <Button
+            shape='circle'
+            icon='rollback'
+            style={{
+              margin: 15
+            }}
+            onClick={() => {
+              setPageMode(PAGE_MODE.DO_COPY)
+            }}
+          />
+        </Col>
+      </Row>
+      <div
+        style={{
+          background: '#fff',
+          padding: 25
+        }}
+      >
+        <WrappedOptionsForm
+          setPageMode={setPageMode}
+        />
+      </div>
+    </>
 
-        <Content style={{ padding: '50px' }}>
-          <div style={{
-            background: '#fff',
-            padding: 24,
-            minHeight: 280
-          }}
-          >
-            <WrappedOptionsForm />
-          </div>
-        </Content>
-
-        <Footer style={{ textAlign: 'center' }}>
-          CopyUrlToMD ©20202 Created by YU-HSIN, CHEN
-        </Footer>
-      </Layout>
-    </div>
   )
 }
 

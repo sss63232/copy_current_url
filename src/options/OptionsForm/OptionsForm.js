@@ -10,6 +10,7 @@ import {
 import AntdFormField from '../AntdFormField/AntdFormField'
 import { promisifiedSyncSet } from '../../browserApiHelpers/storageHelper'
 import { PAGE_MODE } from '../../constants/page'
+import useGetSyncTarget from '../../Hooks/useGetSyncTarget'
 
 const OPTIONS_FORM_NAME = 'optionsForm'
 
@@ -20,6 +21,8 @@ const OptionsForm = props => {
     form,
     setPageMode
   } = props
+
+  const target = useGetSyncTarget()
 
   const handleError = error => {
     if (_.isNull(error)) {
@@ -49,7 +52,7 @@ const OptionsForm = props => {
               key: STORAGE_MESSAGE_KEY,
               content: 'Saved'
             })
-            setPageMode(PAGE_MODE.POPUP)
+            setPageMode(PAGE_MODE.DO_COPY)
           } catch (error) {
             err = error
           }
@@ -69,7 +72,7 @@ const OptionsForm = props => {
           form={form}
           name={TARGET_TAB_TYPE_KEY}
           option={{
-            initialValue: TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
+            initialValue: target[TARGET_TAB_TYPE_KEY],
             rules: [
               {
                 required: true,
@@ -102,7 +105,7 @@ const OptionsForm = props => {
           form={form}
           name={TARGET_CONTENT_TYPE_KEY}
           option={{
-            initialValue: TARGET_CONTENT_TYPE.BOTH_TITLE_URL,
+            initialValue: target[TARGET_CONTENT_TYPE_KEY],
             rules: [
               {
                 required: true,

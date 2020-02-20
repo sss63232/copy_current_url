@@ -1,4 +1,4 @@
 export const PAGE_MODE = {
-  POPUP: 'popup',
+  DO_COPY: 'doCopy',
   OPTIONS: 'options'
 }
