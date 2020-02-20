@@ -8,12 +8,3 @@ export const getTabsByQuerying = async (queryInfo = {}) => {
 
   }
 }
-
-export const getCurrentActiveTabs = async () => {
-  const currentActiveTabs = await getTabsByQuerying({
-    currentWindow: true,
-    active: true
-  })
-
-  return currentActiveTabs
-}

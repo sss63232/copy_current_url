@@ -1,11 +1,9 @@
 import { TARGET_TAB_TYPE, TARGET_CONTENT_TYPE } from '../constants/tab'
 import { getMarkdownLink } from './markdownUtils'
-import { getTabsByQuerying, getCurrentActiveTabs } from './browserTabsUtils'
+import { getTabsByQuerying } from './browserTabsUtils'
 import copy from 'copy-to-clipboard'
 
 export const copyHandler = async target => {
-  let copyingText = ''
-
   const {
     targetTabType = TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
     targetContentType = TARGET_CONTENT_TYPE.BOTH_TITLE_URL
@@ -28,34 +26,39 @@ export const copyHandler = async target => {
   }
 
   const getMD = tab => getMarkdownLink(tab, mdLinkOption)
+  const getJoinedMD = tabs => tabs.map(getMD).join('')
 
+  let selectedTabs = []
   try {
     switch (targetTabType) {
       case TARGET_TAB_TYPE.ALL_TABS: {
-        const tabs = await getTabsByQuerying({ currentWindow: true })
-        copyingText = tabs.map(getMD).join(' ')
+        selectedTabs = await getTabsByQuerying({
+          currentWindow: true
+        })
         break
       }
       case TARGET_TAB_TYPE.HIGHLIGHTED_TABS: {
-        const tabs = await getTabsByQuerying({
+        selectedTabs = await getTabsByQuerying({
           highlighted: true,
           currentWindow: true
         })
-        copyingText = tabs.map(getMD).join(' ')
         break
       }
       default:
       case TARGET_TAB_TYPE.ONLY_CURRENT_TAB: {
-        const tabs = await getCurrentActiveTabs()
-        copyingText = getMD(tabs[0])
+        selectedTabs = await getTabsByQuerying({
+          active: true,
+          currentWindow: true
+        })
         break
       }
     }
 
-    const hasCopiedSuccessfully = copy(copyingText)
+    const text = getJoinedMD(selectedTabs)
+    const hasCopiedSuccessfully = copy(text)
     return {
       hasCopiedSuccessfully,
-      copiedText: copyingText
+      copiedText: text
     }
   } catch (error) {
 
