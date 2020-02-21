@@ -24,7 +24,7 @@ const Popup = () => {
           )
         }
         {
-          pageMode === PAGE_MODE.OPTIONS && (
+          pageMode === PAGE_MODE.SETTINGS && (
             <>
               <Settings
                 setPageMode={setPageMode}

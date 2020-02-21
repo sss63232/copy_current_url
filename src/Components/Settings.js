@@ -35,7 +35,9 @@ const Settings = props => {
           padding: 25
         }}
       >
-        <WrappedOptionsForm />
+        <WrappedOptionsForm
+          setPageMode={setPageMode}
+        />
       </div>
     </>
 

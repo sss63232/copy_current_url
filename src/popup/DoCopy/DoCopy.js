@@ -56,7 +56,7 @@ const DoCopy = props => {
             margin: 15
           }}
           onClick={() => {
-            setPageMode(PAGE_MODE.OPTIONS)
+            setPageMode(PAGE_MODE.SETTINGS)
           }}
         />
       </Row>

@@ -2,14 +2,24 @@
  *  get the title and url transformed into Markdown format
  *
  */
-export const getMarkdownLink = (tab, options = {}) => {
+export const getTabLink = (tab, options = {}) => {
   const {
     hasUrl = true,
     hasTitle = true
   } = options
 
-  const { title, url } = tab
-  const mdLinkText = `[${hasTitle ? title : ''}](${hasUrl ? url : ''}) `
+  const {
+    title,
+    url
+  } = tab
 
-  return mdLinkText
+  if (hasUrl && hasTitle) {
+    return `* [${title}](${url}) \n`
+  }
+
+  if (hasUrl) {
+    return `${url} \n`
+  }
+
+  return `${title} \n`
 }

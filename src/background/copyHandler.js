@@ -1,5 +1,5 @@
 import { TARGET_TAB_TYPE, TARGET_CONTENT_TYPE } from '../constants/tab'
-import { getMarkdownLink } from './markdownUtils'
+import { getTabLink } from './markdownUtils'
 import { getTabsByQuerying } from './browserTabsUtils'
 import copy from 'copy-to-clipboard'
 
@@ -25,8 +25,8 @@ export const copyHandler = async target => {
     }
   }
 
-  const getLinkText = tab => getMarkdownLink(tab, mdLinkOption)
-  const getJoinedLinkText = tabs => tabs.map(getLinkText).join('')
+  const getTextByTab = tab => getTabLink(tab, mdLinkOption)
+  const getJoinedTextByTabs = tabs => tabs.map(getTextByTab).join(' ')
 
   let selectedTabs = []
   try {
@@ -54,7 +54,7 @@ export const copyHandler = async target => {
       }
     }
 
-    const text = getJoinedLinkText(selectedTabs)
+    const text = getJoinedTextByTabs(selectedTabs)
     const hasCopiedSuccessfully = copy(text)
     return {
       hasCopiedSuccessfully,
