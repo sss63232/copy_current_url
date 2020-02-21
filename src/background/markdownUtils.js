@@ -18,8 +18,8 @@ export const getTabLink = (tab, options = {}) => {
   }
 
   if (hasUrl) {
-    return `${url} \n`
+    return `* ${url} \n`
   }
 
-  return `${title} \n`
+  return `* ${title} \n`
 }
