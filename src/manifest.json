@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "manifest_version": 2,
   "name": "CopyUrlToMD",
   "description": "copy the current url into your system clipboard with Markdown formatted.",
