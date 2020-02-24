@@ -3,20 +3,15 @@ import { getTabLink } from './markdownUtils'
 import { getTabsByQuerying } from './browserTabsUtils'
 import copy from 'copy-to-clipboard'
 
-export const copyHandler = async target => {
-  const {
-    targetTabType = TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
-    targetContentType = TARGET_CONTENT_TYPE.BOTH_TITLE_URL
-  } = target
-
-  let mdLinkOption = {}
+export const getTabLinkOption = targetContentType => {
+  let option = {}
   switch (targetContentType) {
     case TARGET_CONTENT_TYPE.ONLY_URL: {
-      mdLinkOption = { hasTitle: false }
+      option = { hasTitle: false }
       break
     }
     case TARGET_CONTENT_TYPE.ONLY_TITLE: {
-      mdLinkOption = { hasUrl: false }
+      option = { hasUrl: false }
       break
     }
     default:
@@ -24,6 +19,17 @@ export const copyHandler = async target => {
       break
     }
   }
+
+  return option
+}
+
+export const copyHandler = async target => {
+  const {
+    targetTabType = TARGET_TAB_TYPE.ONLY_CURRENT_TAB,
+    targetContentType = TARGET_CONTENT_TYPE.BOTH_TITLE_URL
+  } = target
+
+  const mdLinkOption = getTabLinkOption(targetContentType)
 
   const getTextByTab = tab => getTabLink(tab, mdLinkOption)
   const getJoinedTextByTabs = tabs => tabs.map(getTextByTab).join(' ')
