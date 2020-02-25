@@ -1,6 +1,6 @@
 # Thank You
 
-We are grateful that you considered contributing to React Extension Boilerplate. Please follow the below guidelines for contribution.
+We are grateful that you considered contributing to [CopyUrlToMD](https://github.com/sss63232/CopyUrlToMD). Please follow the below guidelines for contribution.
 
 Follow the golden rule
 
@@ -34,7 +34,3 @@ It is highly recommended to follow the below guidelines while writing commits an
 
 - https://blog.github.com/2015-01-21-how-to-write-the-perfect-pull-request/
 - https://code.likeagirl.io/useful-tips-for-writing-better-git-commit-messages-808770609503
-
-## Communication
-
-Please join the [gitter channel](https://gitter.im/react-boilerplate-extension/community) for communication regarding the project. No personal communication will be entertained :)
