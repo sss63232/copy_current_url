@@ -4,7 +4,7 @@ Built from [kryptokinght/react-extension-boilerplate](https://github.com/kryptok
 
 CopyUrlToMD is a utility browser extension to help you copy the URL of certain tabs into your system clipboard with Markdown-formatted.
 
-
+![demo gif](screenshots/demo.gif)
 
 ## Downloads
 
