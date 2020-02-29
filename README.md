@@ -22,7 +22,7 @@ CopyUrlToMD is a utility browser extension to help you copy the URL of certain t
 ## Development
 
 1. You need [**Node.js**](https://nodejs.org/en/) installed or using [**nvm**](https://github.com/creationix/nvm#installation) (recommended) running LTS version of Node.js
-2. You nedd [**Yarn**](https://yarnpkg.com/en/docs/install)
+2. You need [**Yarn**](https://yarnpkg.com/en/docs/install)
 
 ### Retrieve Code
 

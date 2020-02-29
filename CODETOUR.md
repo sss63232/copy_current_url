@@ -74,7 +74,7 @@ To keep things modular, the resources are divided into folders namely `/backgrou
 
 - [`README.md`](CONTRIBUTING.md): Introduction to this project along with instructions to build and contribute to this project.
 
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): Deatiled instructions on contributing to this project.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): Detailed instructions on contributing to this project.
 
 - [`CODETOUR.md`](CODETOUR.md): A tour through all the files and folders of this project.
 
